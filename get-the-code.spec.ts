@@ -1,9 +1,14 @@
 import {describe, expect, it} from "vitest";
 
+const AllPossibleKnightMoves = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] as const;
+type KnightMove = typeof AllPossibleKnightMoves[number];
+type ChestColumn = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H';
+
+
 class Position {
 
-    column = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-    movePossible: Record<'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H', { row: number; column: number }> = {
+    column: ChestColumn[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+    movePossible: Record<KnightMove, { row: number; column: number }> = {
         'A': {row: 2, column: 1},
         'B': {row: 1, column: 2},
         'C': {row: -1, column: 2},
@@ -14,44 +19,45 @@ class Position {
         'H': {row: 2, column: -1}
     }
 
-    constructor(public positionColonne: string, public positionLigne: number) {
+    constructor(public positionColumn: ChestColumn, public positionRow: number) {
     }
 
-    moveBy(knightMove: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H') {
+    moveBy(knightMove: KnightMove) {
         const {row, column} = this.movePossible[knightMove];
 
         return new Position(
-            this.column[this.column.indexOf(this.positionColonne) + column],
-            this.positionLigne + row
+            this.column[this.column.indexOf(this.positionColumn) + column],
+            this.positionRow + row
         );
     }
 
     toString(): string {
-        return this.positionColonne + this.positionLigne
+        return this.positionColumn + this.positionRow
     }
 }
 
 describe('Get the Code', () => {
-    it.each([
-        ['A', new Position('E', 6)],
-        ['B', new Position('F', 5)],
-        ['C', new Position('F', 3)],
-        ['D', new Position('E', 2)],
-        ['E', new Position('C', 2)],
-        ['F', new Position('B', 3)],
-        ['G', new Position('B', 5)],
-        ['H', new Position('C', 6)],
+    it.each<{ knightMove: KnightMove, finalPosition: Position }>([
+        {knightMove: 'A', finalPosition: new Position('E', 6)},
+        {knightMove: 'B', finalPosition: new Position('F', 5)},
+        {knightMove: 'C', finalPosition: new Position('F', 3)},
+        {knightMove: 'D', finalPosition: new Position('E', 2)},
+        {knightMove: 'E', finalPosition: new Position('C', 2)},
+        {knightMove: 'F', finalPosition: new Position('B', 3)},
+        {knightMove: 'G', finalPosition: new Position('B', 5)},
+        {knightMove: 'H', finalPosition: new Position('C', 6)},
     ])
-    (`should go to %s if D4 and receive %s`, async (move: any, expectedPosition) => {
-        expect(new Position('D', 4).moveBy(move))
-            .toEqual(expectedPosition);
+    (`should go to $finalPosition if in D4 and receive $knightMove`, async ({knightMove, finalPosition}) => {
+        expect(new Position('D', 4).moveBy(knightMove))
+            .toEqual(finalPosition);
     });
 
     it('should iterate', async () => {
         'DBGHACDAHEGEBEAFHDHDBBDGEDBHDGEACGGHEECBFFAEBFBCGBCFHFCBGHEBFEABDADAFEHFBGDFBGCCAGDBFHGCCCHAGBEHFEBFEHACHFBFDEAHCGDAGDBFBBFDAEEBAH'
             .split('')
-            .reduce((oldPosition, move: any) => {
-                console.log(oldPosition.toString());
+            .filter((move: any): move is KnightMove => AllPossibleKnightMoves.includes(move))
+            .reduce((oldPosition, move) => {
+                console.log(`${oldPosition}`);
                 return oldPosition.moveBy(move);
             }, new Position('C', 3))
         console.log(parseInt('A1', 16));
