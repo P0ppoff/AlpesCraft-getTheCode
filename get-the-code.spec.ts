@@ -56,12 +56,11 @@ describe('Get the Code', () => {
         'DBGHACDAHEGEBEAFHDHDBBDGEDBHDGEACGGHEECBFFAEBFBCGBCFHFCBGHEBFEABDADAFEHFBGDFBGCCAGDBFHGCCCHAGBEHFEBFEHACHFBFDEAHCGDAGDBFBBFDAEEBAH'
             .split('')
             .filter((move: any): move is KnightMove => AllPossibleKnightMoves.includes(move))
-            .reduce((oldPosition, move) => {
-                console.log(`${oldPosition}`);
+            .reduce((oldPosition, move, currentIndex) => {
+                if (currentIndex === 44) console.log(`${oldPosition}`, parseInt(oldPosition.toString(), 16));
+                if (currentIndex === 125) console.log(`${oldPosition}`, parseInt(oldPosition.toString(), 16));
                 return oldPosition.moveBy(move);
             }, new Position('C', 3))
-        console.log(parseInt('A1', 16));
-        console.log(parseInt('F7', 16));
     });
 });
 
